@@ -62,7 +62,8 @@ static int json_get_int(cJSON *obj, const char *name, int *dest)
 	return 0;
 }
 
-static int json_get_ulong(cJSON *obj, const char *name, unsigned long *dest)
+static int json_get_ulonglong(cJSON *obj, const char *name,
+		unsigned long long *dest)
 {
 	cJSON *attr = cJSON_GetObjectItem(obj, name);
 
@@ -256,14 +257,16 @@ int iota_client_get_node_info(struct iota_node_info *info)
 			&info->jreAvailableProcessors) < 0) {
 		info->jreAvailableProcessors = 0;
 	}
-	if (json_get_ulong(json_resp, "jreFreeMemory", &info->jreFreeMemory) < 0) {
+	if (json_get_ulonglong(json_resp, "jreFreeMemory", &info->jreFreeMemory) <
+			0) {
 		info->jreFreeMemory = 0;
 	}
-	if (json_get_ulong(json_resp, "jreMaxMemory", &info->jreMaxMemory) < 0) {
+	if (json_get_ulonglong(json_resp, "jreMaxMemory", &info->jreMaxMemory) < 0)
+	{
 		info->jreMaxMemory = 0;
 	}
-	if (json_get_ulong(json_resp, "jreTotalMemory", &info->jreTotalMemory) < 0)
-	{
+	if (json_get_ulonglong(json_resp, "jreTotalMemory", &info->jreTotalMemory) <
+			0) {
 		info->jreTotalMemory = 0;
 	}
 	if (json_get_string(json_resp, "latestMilestone", info->latestMilestone.str,

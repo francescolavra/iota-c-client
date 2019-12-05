@@ -36,9 +36,9 @@ struct iota_node_info {
 	char appVersion[32];
 	char jreVersion[32];
 	int jreAvailableProcessors;
-	unsigned long jreFreeMemory;
-	unsigned long jreMaxMemory;
-	unsigned long jreTotalMemory;
+	unsigned long long jreFreeMemory;
+	unsigned long long jreMaxMemory;
+	unsigned long long jreTotalMemory;
 	iota_hash_t latestMilestone;
 	int latestMilestoneIndex;
 	iota_hash_t latestSolidSubtangleMilestone;

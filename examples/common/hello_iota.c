@@ -42,9 +42,9 @@ static void dump_node_info() {
 	printf("App Version: %s\n", node_info.appVersion);
 	printf("JRE Version: %s\n", node_info.jreVersion);
 	printf("Available Processors: %d\n", node_info.jreAvailableProcessors);
-	printf("Free Memory: %lu\n", node_info.jreFreeMemory);
-	printf("Max Memory: %lu\n", node_info.jreMaxMemory);
-	printf("Total Memory: %lu\n", node_info.jreTotalMemory);
+	printf("Free Memory: %llu\n", node_info.jreFreeMemory);
+	printf("Max Memory: %llu\n", node_info.jreMaxMemory);
+	printf("Total Memory: %llu\n", node_info.jreTotalMemory);
 	printf("Latest Milestone: %s\n", node_info.latestMilestone.str);
 	printf("Latest Milestone Index: %d\n", node_info.latestMilestoneIndex);
 	printf("Latest Solid Subtangle Milestone: %s\n",
