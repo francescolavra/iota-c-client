@@ -221,7 +221,9 @@ int iota_wallet_get_receive_addr(iota_addr_t *addr, int with_checksum,
 	idx = ((start_idx != (unsigned int)-1) ? start_idx :
 			(iota_wallet.last_spent_addr + 1));
 	while (1) {
-		for (int i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
+		int i;
+
+		for (i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
 			iota_wallet_get_addr(&addrs[i], idx, 0);
 			idx++;
 		}
@@ -230,7 +232,7 @@ int iota_wallet_get_receive_addr(iota_addr_t *addr, int with_checksum,
 			DPRINTF("%s: couldn't get spent addresses\n", __FUNCTION__);
 			return IOTA_ERR_NETWORK;
 		}
-		for (int i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
+		for (i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
 			if (!spent[i]) {
 				if (with_checksum) {
 					unsigned char addrBytes[NUM_HASH_BYTES];
@@ -316,9 +318,11 @@ int iota_wallet_send_transfer(uint64_t value, const iota_addr_t *recipient,
 		memcpy(bundle->descr.output_txs[0].tag, tag->str, tag_len);
 	}
 	if (value != 0) {
+		int i;
+
 		bytes_to_chars(iota_wallet.seed_bytes, bundle->descr.seed,
 				sizeof(iota_wallet.seed_bytes));
-		for (int i = 0; i < input_count; i++) {
+		for (i = 0; i < input_count; i++) {
 			iota_addr_t addr;
 
 			iota_wallet_get_addr(&addr, input_addrs[i].addr_idx, 0);
@@ -343,7 +347,7 @@ int iota_wallet_send_transfer(uint64_t value, const iota_addr_t *recipient,
 					ret = IOTA_ERR_NETWORK;
 					goto exit;
 				}
-				for (int i = 0; i < input_count; i++) {
+				for (i = 0; i < input_count; i++) {
 					if (input_addrs[i].addr_idx == idx) {
 						change_start_idx = idx + 1;
 						break;
@@ -461,7 +465,9 @@ int iota_wallet_get_addrs_with_balance(struct iota_addr_with_balance *list,
 	int spent_any;
 
 	while (1) {
-		for (int i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
+		int i;
+
+		for (i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
 			iota_wallet_get_addr(&addrs[i], addr_idx, 0);
 			addr_idx++;
 		}
@@ -471,7 +477,7 @@ int iota_wallet_get_addrs_with_balance(struct iota_addr_with_balance *list,
 			return IOTA_ERR_NETWORK;
 		}
 		partial_balance = 0;
-		for (int i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
+		for (i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
 			if (balances[i] != 0) {
 				partial_balance += balances[i];
 				if (list && (list_count < list_size)) {
@@ -498,7 +504,7 @@ int iota_wallet_get_addrs_with_balance(struct iota_addr_with_balance *list,
 			return IOTA_ERR_NETWORK;
 		}
 		spent_any = 0;
-		for (int i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
+		for (i = 0; i < IOTAWALLET_ADDR_QUERY_SIZE; i++) {
 			spent_any |= spent[i];
 		}
 		if (spent_any) {

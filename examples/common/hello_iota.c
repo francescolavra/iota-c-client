@@ -33,6 +33,7 @@
 
 static void dump_node_info() {
 	struct iota_node_info node_info;
+	int i;
 
 	if (iota_client_get_node_info(&node_info)) {
 		printf("Couldn't get node info\n");
@@ -56,7 +57,7 @@ static void dump_node_info() {
 	printf("Tips: %d\n", node_info.tips);
 	printf("Transactions to Request: %d\n", node_info.transactionsToRequest);
 	printf("Features:");
-	for (int i = 0; i < node_info.feature_count; i++) {
+	for (i = 0; i < node_info.feature_count; i++) {
 		printf(" %s", node_info.features[i]);
 	}
 	printf("\nCoordinator Address: %s\n", node_info.coordinatorAddress.str);
@@ -94,6 +95,7 @@ void hello_iota(const char *seed)
 	iota_hash_t bundle;
     static iota_hash_t txs[8];
     iota_tag_t tag;
+	int index;
 	uint64_t balance;
 	int ret;
 
@@ -112,7 +114,7 @@ void hello_iota(const char *seed)
 		printf("Couldn't get IOTA balance\n");
 	}
 	printf("Generating addresses from seed:\n");
-	for (int index = 0; index < 10; index++) {
+	for (index = 0; index < 10; index++) {
 		iota_wallet_get_addr(&addr, index, 1);
 		printf("  index %d: %s\n", index, addr.str);
 	}

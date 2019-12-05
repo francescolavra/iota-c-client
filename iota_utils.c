@@ -88,6 +88,7 @@ struct iota_bundle *iota_alloc_bundle(int num_outputs, int num_zero_txs,
 		int num_inputs, unsigned int security, int with_change)
 {
 	int tx_count;
+	int i;
 	struct iota_bundle *bundle = (struct iota_bundle *) malloc(sizeof(*bundle));
 
 	if (!bundle) {
@@ -113,7 +114,7 @@ struct iota_bundle *iota_alloc_bundle(int num_outputs, int num_zero_txs,
 					__FUNCTION__);
 			goto error;
 		}
-		for (int i = 0; i < num_outputs; i++) {
+		for (i = 0; i < num_outputs; i++) {
 			memset(bundle->descr.output_txs[i].tag, '9', NUM_TAG_TRYTES);
 		}
 		bundle->descr.output_txs_length = num_outputs;
@@ -126,7 +127,7 @@ struct iota_bundle *iota_alloc_bundle(int num_outputs, int num_zero_txs,
 					__FUNCTION__);
 			goto error;
 		}
-		for (int i = 0; i < num_zero_txs; i++) {
+		for (i = 0; i < num_zero_txs; i++) {
 			memset(bundle->descr.zero_txs[i].tag, '9', NUM_TAG_TRYTES);
 		}
 		bundle->descr.zero_txs_length = num_zero_txs;

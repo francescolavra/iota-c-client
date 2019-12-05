@@ -165,12 +165,13 @@ static int iota_client_send_txs(const char *cmd, iota_tx_raw_t *txs,
 {
 	cJSON *json_req, *json_resp;
 	cJSON *tx_array;
+	int i;
 	int ret = IOTA_OK, resp_status;
 
 	json_req = cJSON_CreateObject();
 	cJSON_AddItemToObject(json_req, "command", cJSON_CreateString(cmd));
 	tx_array = cJSON_CreateArray();
-	for (int i = 0; i < tx_count; i++) {
+	for (i = 0; i < tx_count; i++) {
 		cJSON_AddItemToArray(tx_array, cJSON_CreateString(txs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "trytes", tx_array);
@@ -335,6 +336,7 @@ int iota_client_get_balances(iota_addr_t *addrs, unsigned int addr_count,
 		uint64_t *balances)
 {
 	cJSON *json_req, *json_resp, *addr_array;
+	int i;
 	int ret = IOTA_OK, resp_status;
 	cJSON *attr;
 
@@ -342,7 +344,7 @@ int iota_client_get_balances(iota_addr_t *addrs, unsigned int addr_count,
 	cJSON_AddItemToObject(json_req, "command",
 			cJSON_CreateString("getBalances"));
 	addr_array = cJSON_CreateArray();
-	for (int i = 0; i < addr_count; i++) {
+	for (i = 0; i < addr_count; i++) {
 		cJSON_AddItemToArray(addr_array, cJSON_CreateString(addrs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "addresses", addr_array);
@@ -387,6 +389,7 @@ int iota_client_find_transactions(iota_hash_t *txs, unsigned int tx_limit,
 		iota_hash_t *approvees, unsigned int approvee_count)
 {
 	cJSON *json_req, *json_resp;
+	int i;
 	int ret = IOTA_OK, resp_status;
 	cJSON *attr;
 
@@ -396,7 +399,7 @@ int iota_client_find_transactions(iota_hash_t *txs, unsigned int tx_limit,
 	if (bundle_count != 0) {
 		cJSON *bundle_array = cJSON_CreateArray();
 
-		for (int i = 0; i < bundle_count; i++) {
+		for (i = 0; i < bundle_count; i++) {
 			cJSON_AddItemToArray(bundle_array,
 					cJSON_CreateString(bundles[i].str));
 		}
@@ -405,7 +408,7 @@ int iota_client_find_transactions(iota_hash_t *txs, unsigned int tx_limit,
 	if (addr_count != 0) {
 		cJSON *addr_array = cJSON_CreateArray();
 
-		for (int i = 0; i < addr_count; i++) {
+		for (i = 0; i < addr_count; i++) {
 			cJSON_AddItemToArray(addr_array, cJSON_CreateString(addrs[i].str));
 		}
 		cJSON_AddItemToObject(json_req, "addresses", addr_array);
@@ -413,7 +416,7 @@ int iota_client_find_transactions(iota_hash_t *txs, unsigned int tx_limit,
 	if (tag_count != 0) {
 		cJSON *tag_array = cJSON_CreateArray();
 
-		for (int i = 0; i < tag_count; i++) {
+		for (i = 0; i < tag_count; i++) {
 			cJSON_AddItemToArray(tag_array, cJSON_CreateString(tags[i].str));
 		}
 		cJSON_AddItemToObject(json_req, "tags", tag_array);
@@ -421,7 +424,7 @@ int iota_client_find_transactions(iota_hash_t *txs, unsigned int tx_limit,
 	if (approvee_count != 0) {
 		cJSON *approvee_array = cJSON_CreateArray();
 
-		for (int i = 0; i < approvee_count; i++) {
+		for (i = 0; i < approvee_count; i++) {
 			cJSON_AddItemToArray(approvee_array,
 					cJSON_CreateString(approvees[i].str));
 		}
@@ -540,6 +543,7 @@ int iota_client_attach_to_tangle(iota_hash_t *trunk, iota_hash_t *branch,
 {
 	cJSON *json_req, *json_resp;
 	cJSON *tx_array;
+	int i;
 	int ret = IOTA_OK, resp_status;
 	cJSON *attr;
 
@@ -553,7 +557,7 @@ int iota_client_attach_to_tangle(iota_hash_t *trunk, iota_hash_t *branch,
 	cJSON_AddItemToObject(json_req, "minWeightMagnitude",
 			cJSON_CreateNumber(mwm));
 	tx_array = cJSON_CreateArray();
-	for (int i = 0; i < tx_count; i++) {
+	for (i = 0; i < tx_count; i++) {
 		cJSON_AddItemToArray(tx_array, cJSON_CreateString(txs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "trytes", tx_array);
@@ -603,6 +607,7 @@ int iota_client_were_addresses_spent_from(iota_addr_t *addrs,
 		unsigned int addr_count, int *spent)
 {
 	cJSON *json_req, *json_resp, *addr_array;
+	int i;
 	int ret = IOTA_OK, resp_status;
 	cJSON *attr;
 
@@ -610,7 +615,7 @@ int iota_client_were_addresses_spent_from(iota_addr_t *addrs,
 	cJSON_AddItemToObject(json_req, "command",
 			cJSON_CreateString("wereAddressesSpentFrom"));
 	addr_array = cJSON_CreateArray();
-	for (int i = 0; i < addr_count; i++) {
+	for (i = 0; i < addr_count; i++) {
 		cJSON_AddItemToArray(addr_array, cJSON_CreateString(addrs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "addresses", addr_array);
@@ -667,6 +672,7 @@ int iota_client_send_msg(const char *msg, const iota_addr_t *address,
 	iota_hash_t trunk, branch;
 	int msg_offset, msg_len, addr_len, tag_len, tx_count;
 	struct iota_bundle *bundle;
+	int i;
 	int ret = IOTA_OK;
 
 	msg_len = strlen(msg);
@@ -708,7 +714,7 @@ int iota_client_send_msg(const char *msg, const iota_addr_t *address,
 		return IOTA_ERR_NO_MEM;
 	}
 	msg_offset = 0;
-	for (int i = 0; i < tx_count; i++) {
+	for (i = 0; i < tx_count; i++) {
 		if (i < tx_count - 1) {
 			memcpy(bundle->descr.zero_txs[i].message, msg + msg_offset,
 					NUM_SIG_MSG_TRYTES);
