@@ -464,6 +464,9 @@ int iota_wallet_get_addrs_with_balance(struct iota_addr_with_balance *list,
 	uint64_t balance = 0;
 	int spent_any;
 
+	if (addr_idx == (unsigned int)-1) {
+		addr_idx = 0;
+	}
 	while (1) {
 		int i;
 
