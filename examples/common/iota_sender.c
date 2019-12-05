@@ -45,8 +45,8 @@ void iota_sender(const char *seed)
 	sprintf(tag.str, "TAGTAGTAGTAGTAGTAGTAGTAGTAG");
 	if (iota_addr_verify_cksum(&recipient) == IOTA_OK) {
 		printf("Sending IOTAs...\n");
-		ret = iota_wallet_send_transfer(1, &recipient, &tag, -1, NULL,
-				-1, NULL);
+		ret = iota_wallet_send_transfer(1, &recipient, &tag, (unsigned int) -1,
+				NULL, (unsigned int) -1, NULL);
 		printf("Transfer result: %d (%s)\n", ret,
 				(ret == IOTA_OK) ? "OK": "error");
 	}

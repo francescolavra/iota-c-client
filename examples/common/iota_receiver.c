@@ -41,7 +41,7 @@ void iota_receiver(const char *seed)
 		printf("Cannot initialize IOTA wallet\n");
 		return;
 	}
-	ret = iota_wallet_get_receive_addr(&addr, 1, -1, NULL);
+	ret = iota_wallet_get_receive_addr(&addr, 1, (unsigned int) -1, NULL);
 	if (ret == IOTA_OK) {
 		printf("Please send IOTAs to this address: %s\n", addr.str);
 		addr.str[81] = '\0';	/* remove address checksum */
