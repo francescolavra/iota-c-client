@@ -23,14 +23,12 @@
  * SOFTWARE.
  */
 
-#include <cJSON.h>
-#include <esp_err.h>
-#include <esp_http_client.h>
 #include <string.h>
 
 #include "iota_client.h"
 #include "iota_common.h"
 #include "iota_utils.h"
+#include "platform.h"
 
 #include "iota-c-library/src/iota/addresses.h"
 #include "iota-c-library/src/iota/bundle.h"
@@ -45,7 +43,7 @@
 #endif
 
 static struct {
-	esp_http_client_handle_t http_client;
+	void *http_client;
 	unsigned int mwm;
 	pow_handler_t pow_handler;
 	void *pow_priv;
@@ -92,74 +90,6 @@ static int json_get_string(cJSON *obj, const char *name,
 	return 0;
 }
 
-static esp_err_t iota_client_http_event_handler(esp_http_client_event_t *evt)
-{
-	switch(evt->event_id) {
-	case HTTP_EVENT_ERROR:
-		DPRINTF("%s: error\n", __FUNCTION__);
-		break;
-	case HTTP_EVENT_ON_CONNECTED:
-		DPRINTF("%s: connected\n", __FUNCTION__);
-		break;
-	default:
-		break;
-    }
-    return ESP_OK;
-}
-
-static cJSON *iota_client_send_req(cJSON *req, int *status_code)
-{
-	esp_err_t err;
-	char *buf, *larger_buf;
-	int req_len, resp_len, read_len;
-	cJSON *resp = NULL;
-
-	buf = cJSON_PrintUnformatted(req);
-	if (!buf) {
-		DPRINTF("%s: failed to write JSON request\n", __FUNCTION__);
-		return NULL;
-	}
-	req_len = strlen(buf);
-	if ((err = esp_http_client_open(iota_client.http_client, req_len)) !=
-			ESP_OK) {
-		DPRINTF("%s: failed to connect: %s\n", __FUNCTION__,
-				esp_err_to_name(err));
-		goto exit;
-	}
-    if (esp_http_client_write(iota_client.http_client, buf, req_len) <= 0) {
-		DPRINTF("%s: failed to write data\n", __FUNCTION__);
-		goto exit;
-    }
-	resp_len = esp_http_client_fetch_headers(iota_client.http_client);
-	*status_code = esp_http_client_get_status_code(iota_client.http_client);
-	DPRINTF("%s: status %d, content length %d\n", __FUNCTION__, *status_code,
-			resp_len);
-	if (resp_len >= req_len) {
-		larger_buf = realloc(buf, resp_len + 1);
-		if (!larger_buf) {
-			DPRINTF("%s: failed to allocate memory for response\n",
-					__FUNCTION__);
-			goto exit;
-		}
-		buf = larger_buf;
-	}
-	read_len = esp_http_client_read(iota_client.http_client, buf, resp_len);
-	if (read_len <= 0) {
-		DPRINTF("%s: failed to read response\n", __FUNCTION__);
-		goto exit;
-	}
-	DPRINTF("%s: read length %d\n", __FUNCTION__, read_len);
-	esp_http_client_close(iota_client.http_client);
-	buf[read_len] = '\0';
-	resp = cJSON_Parse(buf);
-	if (!resp) {
-		DPRINTF("%s: failed to parse response\n", __FUNCTION__);
-	}
-exit:
-	free(buf);
-	return resp;
-}
-
 static int iota_client_send_txs(const char *cmd, iota_tx_raw_t *txs,
 		unsigned int tx_count)
 {
@@ -175,7 +105,8 @@ static int iota_client_send_txs(const char *cmd, iota_tx_raw_t *txs,
 		cJSON_AddItemToArray(tx_array, cJSON_CreateString(txs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "trytes", tx_array);
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -190,37 +121,14 @@ static int iota_client_send_txs(const char *cmd, iota_tx_raw_t *txs,
 
 int iota_client_init(const char *node_url)
 {
-	esp_http_client_config_t config;
-	esp_err_t err;
-
-	memset(&config, 0, sizeof(config));
-	config.url = node_url;
-	config.method = HTTP_METHOD_POST;
-	config.timeout_ms = 32 * 1024;
-	config.event_handler = iota_client_http_event_handler;
-	iota_client.http_client = esp_http_client_init(&config);
+	iota_client.http_client = iota_client_http_init(node_url);
 	if (iota_client.http_client == NULL) {
 		DPRINTF("%s: failed to initialize HTTP client\n", __FUNCTION__);
 		return -1;
 	}
-	if ((err = esp_http_client_set_header(iota_client.http_client,
-			"Content-Type", "application/json")) != ESP_OK) {
-		DPRINTF("%s: failed to set content-type header: %s\n", __FUNCTION__,
-				esp_err_to_name(err));
-		goto error;
-	}
-	if ((err = esp_http_client_set_header(iota_client.http_client,
-			"X-IOTA-API-Version", "1")) != ESP_OK) {
-		DPRINTF("%s: failed to set API version header: %s\n", __FUNCTION__,
-				esp_err_to_name(err));
-		goto error;
-	}
 	iota_client.mwm = 14;
 	iota_client.pow_handler = NULL;
 	return 0;
-error:
-	esp_http_client_cleanup(iota_client.http_client);
-	return -1;
 }
 
 int iota_client_get_node_info(struct iota_node_info *info)
@@ -232,7 +140,8 @@ int iota_client_get_node_info(struct iota_node_info *info)
 	json_req = cJSON_CreateObject();
 	cJSON_AddItemToObject(json_req, "command",
 			cJSON_CreateString("getNodeInfo"));
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -349,7 +258,8 @@ int iota_client_get_balances(iota_addr_t *addrs, unsigned int addr_count,
 	}
 	cJSON_AddItemToObject(json_req, "addresses", addr_array);
 	cJSON_AddItemToObject(json_req, "threshold", cJSON_CreateNumber(100));
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -430,7 +340,8 @@ int iota_client_find_transactions(iota_hash_t *txs, unsigned int tx_limit,
 		}
 		cJSON_AddItemToObject(json_req, "approvees", approvee_array);
 	}
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -472,7 +383,8 @@ int iota_client_get_transaction(iota_hash_t *hash, struct iota_tx *tx)
 	cJSON_AddItemToObject(json_req, "command", cJSON_CreateString("getTrytes"));
 	hash_array = cJSON_CreateStringArray(&hash_ptr, 1);
 	cJSON_AddItemToObject(json_req, "hashes", hash_array);
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -510,7 +422,8 @@ int iota_client_get_transactions_to_approve(int depth, iota_hash_t *trunk,
 	cJSON_AddItemToObject(json_req, "command",
 			cJSON_CreateString("getTransactionsToApprove"));
 	cJSON_AddItemToObject(json_req, "depth", cJSON_CreateNumber(depth));
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -561,7 +474,8 @@ int iota_client_attach_to_tangle(iota_hash_t *trunk, iota_hash_t *branch,
 		cJSON_AddItemToArray(tx_array, cJSON_CreateString(txs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "trytes", tx_array);
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
@@ -619,7 +533,8 @@ int iota_client_were_addresses_spent_from(iota_addr_t *addrs,
 		cJSON_AddItemToArray(addr_array, cJSON_CreateString(addrs[i].str));
 	}
 	cJSON_AddItemToObject(json_req, "addresses", addr_array);
-	json_resp = iota_client_send_req(json_req, &resp_status);
+	json_resp = iota_client_send_req(iota_client.http_client, json_req,
+			&resp_status);
 	cJSON_Delete(json_req);
 	if (!json_resp) {
 		return IOTA_ERR_NETWORK;
