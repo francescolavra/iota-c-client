@@ -1,0 +1,191 @@
+/*
+ * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+// @cliArgs --board /ti/boards/CC3220S_LAUNCHXL
+
+/*
+ *  common.syscfg
+ */
+
+var SimpleLinkWifi = scripting.addModule("/ti/drivers/net/wifi/SimpleLinkWifi");
+var Crypto = scripting.addModule("/ti/drivers/Crypto");
+var Crypto1 = Crypto.addInstance();
+var Power = scripting.addModule("/ti/drivers/Power");
+var Board = scripting.addModule("/ti/drivers/Board");
+var DriverLib = scripting.addModule("/ti/devices/DriverLib");
+var Display = scripting.addModule("/ti/display/Display");
+var Display1 = Display.addInstance();
+var DMA = scripting.addModule("/ti/drivers/DMA");
+var GPIO = scripting.addModule("/ti/drivers/GPIO");
+var GPIO1 = GPIO.addInstance();
+var GPIO2 = GPIO.addInstance();
+var GPIO3 = GPIO.addInstance();
+var GPIO4 = GPIO.addInstance();
+var GPIO5 = GPIO.addInstance();
+var GPIO6 = GPIO.addInstance();
+var GPIO7 = GPIO.addInstance();
+var GPIO8 = GPIO.addInstance();
+var SPI = scripting.addModule("/ti/drivers/SPI");
+var SPI1 = SPI.addInstance();
+var Timer = scripting.addModule("/ti/drivers/Timer");
+var Timer1 = Timer.addInstance();
+var Timer2 = Timer.addInstance();
+var Timer3 = Timer.addInstance();
+var Watchdog = scripting.addModule("/ti/drivers/Watchdog");
+var Watchdog1 = Watchdog.addInstance();
+// Name - The C/C++ identifier used in applications as the index parameter passed to Crypto runtime APIs
+Crypto1.$name = "CONFIG_Crypto_0";
+// IO Retention Shutdown - IO groups to be retained during Shutdown
+Power.ioRetentionShutdown = ["GRP_1"];
+// Name
+Power.parkPins.$name = "ti_drivers_power_PowerCC32XXPins0";
+// Name - The C/C++ identifier used in applications as the index parameter passed to Display runtime APIs
+Display1.$name = "CONFIG_Display_0";
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+Display1.$hardware = system.deviceData.board.components.XDS110UART;
+// Name - The C/C++ identifier used in applications as the index parameter passed to UART runtime APIs
+Display1.uart.$name = "CONFIG_UART_0";
+// Use DMA
+Display1.uart.useDMA = true;
+// Name
+Display1.uart.uart.$name = "MyUART1";
+// Use Peripheral
+Display1.uart.uart.$assign = "UART0";
+// Assign pin
+Display1.uart.uart.txPin.$assign = "GP01"; // pin number - 55
+// Assign pin
+Display1.uart.uart.rxPin.$assign = "GP02"; // pin number - 57
+// Assign pin
+Display1.uart.uart.txDmaChannel.$assign = "UDMA_CH9";
+// Assign pin
+Display1.uart.uart.rxDmaChannel.$assign = "UDMA_CH8";
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+GPIO1.$hardware = system.deviceData.board.components.SW2;
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO1.$name = "CONFIG_GPIO_BUTTON_0";
+// Assign pin
+GPIO1.gpioPin.$assign = "boosterpack.3"; // P04
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+GPIO2.$hardware = system.deviceData.board.components.SW3;
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO2.$name = "CONFIG_GPIO_BUTTON_1";
+// Assign pin
+GPIO2.gpioPin.$assign = "boosterpack.11"; // P15
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+GPIO3.$hardware = system.deviceData.board.components.LED0;
+// Output Strength - Specifies the output strength
+GPIO3.outputStrength = "High";
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO3.$name = "CONFIG_GPIO_LED_0";
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+GPIO4.$hardware = system.deviceData.board.components.LED2;
+// Output Strength - Specifies the output strength
+GPIO4.outputStrength = "High";
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO4.$name = "CONFIG_GPIO_LED_1";
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+GPIO5.$hardware = system.deviceData.board.components.LED1;
+// Output Strength - Specifies the output strength
+GPIO5.outputStrength = "High";
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO5.$name = "CONFIG_GPIO_LED_2";
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO6.$name = "CONFIG_GPIO_0";
+// Mode - Select the GPIO mode
+GPIO6.mode = "Dynamic";
+// Assign pin
+GPIO6.gpioPin.$assign = "boosterpack.19"; // P18
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO7.$name = "CONFIG_GPIO_1";
+// Mode - Select the GPIO mode
+GPIO7.mode = "Dynamic";
+// Assign pin
+GPIO7.gpioPin.$assign = "boosterpack.2"; // P58*
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO8.$name = "CONFIG_GPIO_2";
+// Mode - Select the GPIO mode
+GPIO8.mode = "Dynamic";
+// Assign pin
+GPIO8.gpioPin.$assign = "boosterpack.4"; // P03
+// Name - The C/C++ identifier used in applications as the index parameter passed to SPI runtime APIs
+SPI1.$name = "CONFIG_SPI_0";
+// Mode - In three pin mode the SS signal is not used.
+SPI1.mode = "Four Pin SS Active Low";
+// Default TX Buffer Value - Specifies the default transmit buffer value.
+SPI1.defaultTxBufferValue = "0";
+// Name
+SPI1.spi.$name = "MySPI1";
+// Use Peripheral
+SPI1.spi.$assign = "SPI0";
+// Assign pin
+SPI1.spi.sclkPin.$assign = "boosterpack.7"; // P05
+// Assign pin
+SPI1.spi.misoPin.$assign = "boosterpack.14"; // P06
+// Assign pin
+SPI1.spi.mosiPin.$assign = "boosterpack.15"; // P07
+// Assign pin
+SPI1.spi.ssPin.$assign = "boosterpack.18"; // P08
+// Assign pin
+SPI1.spi.dmaRxChannel.$assign = "UDMA_CH6";
+// Assign pin
+SPI1.spi.dmaTxChannel.$assign = "UDMA_CH7";
+// Name - The C/C++ identifier used in applications as the index parameter passed to Timer runtime APIs
+Timer1.$name = "CONFIG_TIMER_0";
+// Timer Type
+Timer1.timerType = "32 Bits";
+// Name
+Timer1.timer.$name = "MyTimer1";
+// Use Peripheral
+Timer1.timer.$assign = "Timer0";
+// Name - The C/C++ identifier used in applications as the index parameter passed to Timer runtime APIs
+Timer2.$name = "CONFIG_TIMER_1";
+// Name
+Timer2.timer.$name = "MyTimer1";
+// Use Peripheral
+Timer2.timer.$assign = "Timer1";
+// Name - The C/C++ identifier used in applications as the index parameter passed to Timer runtime APIs
+Timer3.$name = "CONFIG_TIMER_2";
+// Name
+Timer3.timer.$name = "MyTimer1";
+// Use Peripheral
+Timer3.timer.$assign = "Timer1";
+// Name - The C/C++ identifier used in applications as the index parameter passed to Watchdog runtime APIs
+Watchdog1.$name = "CONFIG_WATCHDOG_0";
+// Name
+Watchdog1.watchdog.$name = "MyWATCHDOG1";
+// Use Peripheral
+Watchdog1.watchdog.$assign = "WATCHDOG0";
+// Suggest solution
+GPIO3.gpioPin.$suggestSolution = "64";
+// Suggest solution
+GPIO4.gpioPin.$suggestSolution = "1";
+// Suggest solution
+GPIO5.gpioPin.$suggestSolution = "2";

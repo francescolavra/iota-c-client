@@ -7,6 +7,7 @@ It can connect to IOTA nodes using either HTTP or HTTPS.
 Supported platforms:
 * ESP32 (this library implements an ESP-IDF component)
 * CC3200
+* CC3220
 
 ## Dependencies
 
