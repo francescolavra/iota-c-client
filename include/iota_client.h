@@ -130,15 +130,14 @@ int iota_client_get_transactions_to_approve(int depth, iota_hash_t *trunk,
          transactions to the tangle; it can be retrieved via the
          getTransactionsToApprove() method
   @param mwm  Minimum weight magnitude to be used when doing Proof of Work
-  @param txs  Array of transactions to attach to the tangle as a bundle
+  @param txs  Array of transactions to attach to the tangle as a bundle; these
+         transactions are modified inside this function by adding Proof of Work
+         data received from the remote node
   @param tx_count  Length of transaction array
-  @param txs_with_pow  Array that is filled with transaction data with Proof of
-         Work
   @return 0 if successful, negative number otherwise
 */
 int iota_client_attach_to_tangle(iota_hash_t *trunk, iota_hash_t *branch,
-		int mwm, iota_tx_raw_t *txs, unsigned int tx_count,
-		iota_tx_raw_t *txs_with_pow);
+		int mwm, iota_tx_raw_t *txs, unsigned int tx_count);
 
 /** Store transactions in the tangle
   @param txs  Array of transactions (with Proof of Work) to be stored in the

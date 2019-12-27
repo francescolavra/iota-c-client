@@ -402,7 +402,7 @@ int iota_wallet_send_transfer(uint64_t value, const iota_addr_t *recipient,
 	if (iota_wallet.pow_handler) {
 		DPRINTF("%s: using external PoW client\n", __FUNCTION__);
 		if (iota_wallet.pow_handler(iota_wallet.pow_priv, &trunk, &branch,
-				iota_wallet.mwm, bundle->txs, tx_count, bundle->txs_with_pow) <
+				iota_wallet.mwm, bundle->txs, tx_count) <
 				0) {
 			ret = IOTA_ERR_POW;
 			goto exit;
@@ -410,13 +410,13 @@ int iota_wallet_send_transfer(uint64_t value, const iota_addr_t *recipient,
 	}
 	else {
 		if (iota_client_attach_to_tangle(&trunk, &branch, iota_wallet.mwm,
-				bundle->txs, tx_count, bundle->txs_with_pow) < 0) {
+				bundle->txs, tx_count) < 0) {
 			DPRINTF("%s: couldn't attach to tangle\n", __FUNCTION__);
 			ret = IOTA_ERR_NETWORK;
 			goto exit;
 		}
 	}
-	if (iota_client_store_transactions(bundle->txs_with_pow, tx_count) < 0) {
+	if (iota_client_store_transactions(bundle->txs, tx_count) < 0) {
 		DPRINTF("%s: couldn't store transactions\n", __FUNCTION__);
 		ret = IOTA_ERR_NETWORK;
 		goto exit;
@@ -427,7 +427,7 @@ int iota_wallet_send_transfer(uint64_t value, const iota_addr_t *recipient,
 			iota_wallet.last_spent_addr = input_addrs[input_count - 1].addr_idx;
 		}
 	}
-	ret = (iota_client_broadcast_transactions(bundle->txs_with_pow, tx_count) ==
+	ret = (iota_client_broadcast_transactions(bundle->txs, tx_count) ==
 			0) ? IOTA_OK : IOTA_ERR_NETWORK;
 exit:
 	iota_free_bundle(bundle);

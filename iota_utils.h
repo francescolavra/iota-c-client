@@ -34,7 +34,6 @@ struct iota_bundle {
 	iota_wallet_bundle_description_t descr;
 	iota_hash_t bundle_hash;
 	iota_tx_raw_t *txs;
-	iota_tx_raw_t *txs_with_pow;
 };
 
 struct iota_bundle *iota_alloc_bundle(int num_outputs, int num_zero_txs,

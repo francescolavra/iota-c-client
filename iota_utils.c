@@ -98,14 +98,12 @@ struct iota_bundle *iota_alloc_bundle(int num_outputs, int num_zero_txs,
 	memset(&bundle->descr, 0, sizeof(bundle->descr));
 	tx_count = num_outputs + num_zero_txs + num_inputs * security +
 			!!with_change;
-	bundle->txs = (iota_tx_raw_t *) malloc(sizeof(iota_tx_raw_t) * tx_count *
-			2);
+	bundle->txs = (iota_tx_raw_t *) malloc(sizeof(iota_tx_raw_t) * tx_count);
 	if (!bundle->txs) {
 		DPRINTF("%s: couldn't allocate memory for transaction characters\n",
 				__FUNCTION__);
 		goto error;
 	}
-	bundle->txs_with_pow = bundle->txs + tx_count;
 	if (num_outputs > 0) {
 		bundle->descr.output_txs = (iota_wallet_tx_output_t *) malloc(
 				num_outputs * sizeof(iota_wallet_tx_output_t));

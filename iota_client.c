@@ -451,8 +451,7 @@ exit:
 }
 
 int iota_client_attach_to_tangle(iota_hash_t *trunk, iota_hash_t *branch,
-		int mwm, iota_tx_raw_t *txs, unsigned int tx_count,
-		iota_tx_raw_t *txs_with_pow)
+		int mwm, iota_tx_raw_t *txs, unsigned int tx_count)
 {
 	cJSON *json_req, *json_resp;
 	cJSON *tx_array;
@@ -494,7 +493,7 @@ int iota_client_attach_to_tangle(iota_hash_t *trunk, iota_hash_t *branch,
 		cJSON_ArrayForEach(tx_obj, attr) {
 			tx = cJSON_GetStringValue(tx_obj);
 			if (tx && (strlen(tx) == NUM_TRANSACTION_TRYTES)) {
-				strcpy(txs_with_pow[tx_count++].str, tx);
+				strcpy(txs[tx_count++].str, tx);
 			}
 		}
 	}
@@ -654,7 +653,7 @@ int iota_client_send_msg(const char *msg, const iota_addr_t *address,
 	if (iota_client.pow_handler) {
 		DPRINTF("%s: using external PoW client\n", __FUNCTION__);
 		if (iota_client.pow_handler(iota_client.pow_priv, &trunk, &branch,
-				iota_client.mwm, bundle->txs, tx_count, bundle->txs_with_pow) <
+				iota_client.mwm, bundle->txs, tx_count) <
 		        0) {
 			ret = IOTA_ERR_POW;
 			goto exit;
@@ -662,16 +661,16 @@ int iota_client_send_msg(const char *msg, const iota_addr_t *address,
 	}
 	else {
 		if (iota_client_attach_to_tangle(&trunk, &branch, iota_client.mwm,
-				bundle->txs, tx_count, bundle->txs_with_pow) < 0) {
+				bundle->txs, tx_count) < 0) {
 			ret = IOTA_ERR_NETWORK;
 			goto exit;
 		}
 	}
-	if (iota_client_store_transactions(bundle->txs_with_pow, tx_count) < 0) {
+	if (iota_client_store_transactions(bundle->txs, tx_count) < 0) {
 		ret = IOTA_ERR_NETWORK;
 		goto exit;
 	}
-	ret = iota_client_broadcast_transactions(bundle->txs_with_pow, tx_count);
+	ret = iota_client_broadcast_transactions(bundle->txs, tx_count);
 exit:
 	iota_free_bundle(bundle);
 	return ret;
@@ -701,23 +700,23 @@ int iota_client_attach_address(const iota_addr_t *addr)
 	if (iota_client.pow_handler) {
 		DPRINTF("%s: using external PoW client\n", __FUNCTION__);
 		if (iota_client.pow_handler(iota_client.pow_priv, &trunk, &branch,
-				iota_client.mwm, bundle->txs, 1, bundle->txs_with_pow) < 0) {
+				iota_client.mwm, bundle->txs, 1) < 0) {
 			ret = IOTA_ERR_POW;
 			goto exit;
 		}
 	}
 	else {
 		if (iota_client_attach_to_tangle(&trunk, &branch, iota_client.mwm,
-				bundle->txs, 1, bundle->txs_with_pow) < 0) {
+				bundle->txs, 1) < 0) {
 			ret = IOTA_ERR_NETWORK;
 			goto exit;
 		}
 	}
-	if (iota_client_store_transactions(bundle->txs_with_pow, 1) < 0) {
+	if (iota_client_store_transactions(bundle->txs, 1) < 0) {
 		ret = IOTA_ERR_NETWORK;
 		goto exit;
 	}
-	ret = iota_client_broadcast_transactions(bundle->txs_with_pow, 1);
+	ret = iota_client_broadcast_transactions(bundle->txs, 1);
 exit:
 	iota_free_bundle(bundle);
 	return ret;

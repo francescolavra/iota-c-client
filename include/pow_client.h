@@ -36,15 +36,14 @@
          transactions to the tangle
   @param mwm  Minimum weight magnitude to be used when doing Proof of Work
   @param txs  Array of transactions constituting the bundle on which Proof of
-         Work should be performed
+         Work should be performed; these transactions are modified inside this
+         function by adding Proof of Work data
   @param tx_count  Number of transactions in the bundle
-  @param txs_with_pow  Array that is filled with transaction data with Proof of
-         Work
   @return 0 if Proof of Work has been done successfully, negative number
           otherwise
 	*/
 typedef int (*pow_handler_t)(void *priv, iota_hash_t *trunk,
-		iota_hash_t *branch, int mwm, iota_tx_raw_t *txs, unsigned int tx_count,
-		iota_tx_raw_t *txs_with_pow);
+		iota_hash_t *branch, int mwm, iota_tx_raw_t *txs,
+		unsigned int tx_count);
 
 #endif
