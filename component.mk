@@ -13,4 +13,4 @@ COMPONENT_OBJS := \
 	iota-c-library/src/iota/kerl.o iota-c-library/src/iota/signing.o \
 	iota-c-library/src/iota/transfers.o \
 	iota-c-library/src/keccak/sha3.o \
-	platform/esp32.o
+	platform/esp.o

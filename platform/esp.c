@@ -29,7 +29,7 @@
 
 #include "../platform.h"
 
-#ifdef IOTA_ESP32_DEBUG
+#ifdef IOTA_ESP_DEBUG
 #define DPRINTF	printf
 #else
 #define DPRINTF(fmt, ...)	do {} while(0)
