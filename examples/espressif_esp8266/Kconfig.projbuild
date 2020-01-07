@@ -1,0 +1,33 @@
+menu "IOTA examples configuration"
+
+config IOTA_WIFI_SSID
+    string "Wi-Fi Network SSID"
+    help
+        Name of Wi-Fi network to connect to when running the IOTA examples
+
+config IOTA_WIFI_PWD
+    string "Wi-Fi Network Password"
+    help
+        Password of Wi-Fi network to connect to when running the IOTA examples
+
+config IOTA_SEED
+    string "IOTA Seed"
+    default "DONOTUSETHISSEEDDONOTUSETHISSEEDDONOTUSETHISSEEDDONOTUSETHISSEEDDONOTUSETHISSEED9"
+    help
+        Seed needed to access funds in your IOTA wallet
+
+choice IOTA_EXAMPLE
+    prompt "Example to run"
+    default IOTA_EXAMPLE_HELLO
+    help
+        Select which IOTA example you want to run.
+
+config IOTA_EXAMPLE_HELLO
+    bool "Hello IOTA"
+config IOTA_EXAMPLE_SENDER
+    bool "IOTA Sender"
+config IOTA_EXAMPLE_RECEIVER
+    bool "IOTA Receiver"
+endchoice
+
+endmenu

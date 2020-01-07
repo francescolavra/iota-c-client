@@ -5,13 +5,13 @@ This is an IOTA client library written in C; it can be used to connect to a user
 It can connect to IOTA nodes using either HTTP or HTTPS.
 
 Supported platforms:
-* ESP32 (this library implements an ESP-IDF component)
+* ESP8266 and ESP32 (this library implements an ESP-IDF component)
 * CC3200
 * CC3220
 
 ## Dependencies
 
-* cJSON library (https://github.com/DaveGamble/cJSON) (for ESP32, this library is already included in the ESP-IDF framework)
+* cJSON library (https://github.com/DaveGamble/cJSON) (for ESP8266 and ESP32, this library is already included in the ESP-IDF framework)
 
 ## Known Issues and Limitations
 
